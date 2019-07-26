@@ -1,0 +1,75 @@
+function P = RecogniseFace(I, featureType, classifierName)
+
+%     featureType = 'SURF'
+%     I = 'IMG_0626.jpg'
+%     classifierName = 'SVM'
+% I couldnt work out how to save the image classifier
+% So DetectFaces needs to be run to get surfSVM
+% Uncomment DetectFaces and run
+
+% DetectFaces
+% surfSVMLoaded = [];
+if strcmp(featureType,'SURF')& strcmp(classifierName,'SVM') 
+%     surfSVMLoaded = load('surfSVMClassifier.mat')
+    
+	img = imread(I);
+	[labelIdx, ~] = predict(surfSVM, img);
+% Display the string label
+	surfSVM.Labels(labelIdx)
+end    
+
+
+A = imread(I); 
+% imshow(A);
+FaceDetector = vision.CascadeObjectDetector(); 
+BBOX = step(FaceDetector,A); 
+% i=1
+
+B=img
+P = NaN(length(BBOX),3)
+for i=1:length(BBOX)
+    BBOX(i,:)
+    
+    
+    J = imcrop(img,BBOX(i,:))
+    [labelIdx,~] = predict(surfSVM, J);
+    labelssurfsvm = surfSVM.Labels(labelIdx)
+    B = insertObjectAnnotation(B,'rectangle',BBOX(i,:),labelssurfsvm); 
+    xCenter =  (BBOX(i,1) + BBOX(i,3))/2
+    yCenter = (BBOX(i,2) - BBOX(i,4))/2
+    id = labelIdx
+    P(i,:) = [id, xCenter, yCenter]
+end
+
+figure;
+imshow(B),title('Detected Faces');
+%UNTITLED3 Summary of this function goes here
+%   Detailed explanation goes here
+
+
+% P = a matrix P should be a matrix of size Nx3, where N is the number of people detected in the number of image. The three columns should represent
+
+% 1. id, a unique number associated with each person that matches the number in database provided
+% 
+% 2. x, the x location of the person detected in the image (central face region)
+% 
+% 3. y, the y location of the person detected in the image (central face region)
+
+% Create Matrix
+
+% Run Recognition of face on I  - Face detection
+% Face registration
+% Feature Extraction
+
+% Do if statements ie if classifier name == CNN use that one, similarly for
+% feature type
+
+% Classify Image using Trained Model
+% Return Number and location
+
+
+
+
+
+end
+
